@@ -1,7 +1,8 @@
+// export { EmbededNearpay } from './embeded/EmbededNearpay';
 
 export * from './definitions';
-export { EmbededNearpay } from '../dist/embeded/embeded_nearpay';
-export { RemoteNearpay } from '../dist/remote/remote_nearpay';
+export { EmbededNearpay } from './embeded/embeded_nearpay';
+export { RemoteNearpay } from './remote/remote_nearpay';
 export {
   CONNECTION_STATE,
   NEARPAY_CONNECTOR,
@@ -40,7 +41,7 @@ export {
   Locale,
   NetworkConfig,
   UIPosition,
-} from '../dist/definitions';
+} from './definitions';
 export type {
   EmbededPurchaseOptions,
   EmbededReconcileOptions,
@@ -48,5 +49,5 @@ export type {
   EmbededReverseOptions,
   EmbededSessionOptions,
   EmbededInitializeOptions,
-} from '../dist/definitions';
+} from './definitions';
 

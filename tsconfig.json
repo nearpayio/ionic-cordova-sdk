@@ -10,13 +10,8 @@
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "types": ["cordova"],
-    "typeRoots": ["./node_modules/@types","./dist"],
+    "typeRoots": ["./node_modules/@types"],
     "allowSyntheticDefaultImports": true,
-    "declaration": true,
-    "emitDeclarationOnly": false,
-    "declarationMap": true,
-    "removeComments": true,
-    "strict": true
   },
   "include": ["www/**/*.ts"],
   "exclude": ["node_modules"]

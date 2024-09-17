@@ -1,11 +1,8 @@
 {
   "name": "@nearpayio/ionic-cordova-sdk",
-  "version": "0.0.8",
+  "version": "0.0.1",
   "description": "Nearpay ionic cordova SDK",
   "type": "module",
-  "types": "./dist/NearpayCordovaSDK.js",
-  "main": "./dist/NearpayCordovaSDK.js",
-  "module": "./dist/NearpayCordovaSDK.js",
   "publishConfig": {
     "access": "public"
   },
