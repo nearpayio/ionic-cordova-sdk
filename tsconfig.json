@@ -4,7 +4,7 @@
     "target": "ES5",
     "moduleResolution": "node",
     "lib": ["DOM", "ES2015"],
-    "outDir": "./dist",            
+    "outDir": "./www/js",            
     "esModuleInterop": true,
     "skipLibCheck": true,
     "allowJs": true,
