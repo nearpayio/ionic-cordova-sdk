@@ -1,0 +1,40 @@
+{
+  "name": "@nearpayio/ionic-cordova-sdk",
+  "version": "0.0.8",
+  "description": "Nearpay ionic cordova SDK",
+  "type": "module",
+  "types": "./dist/NearpayCordovaSDK.js",
+  "main": "./dist/NearpayCordovaSDK.js",
+  "module": "./dist/NearpayCordovaSDK.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "cordova": {
+    "id": "nearpay-ionic-cordova-sdk",
+    "platforms": [
+      "ios",
+      "android"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-ios",
+    "cordova-android"
+  ],
+  "author": "Ahmed Khalifa",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/cordova": "^11.0.3",
+    "@types/node": "^22.5.4",
+    "@types/uuid": "^9.0.1",
+    "typescript": "^5.5.4"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@ionic/storage": "^4.0.0",
+    "@nearpaydev/nearpay-ts-sdk": "^1.0.5",
+    "cordova": "^12.0.0"
+  }
+}

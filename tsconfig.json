@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ES5",
+    "moduleResolution": "node",
+    "lib": ["DOM", "ES2015"],
+    "outDir": "./dist",            
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["cordova"],
+    "typeRoots": ["./node_modules/@types","./dist"],
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "emitDeclarationOnly": false,
+    "declarationMap": true,
+    "removeComments": true,
+    "strict": true
+  },
+  "include": ["www/**/*.ts"],
+  "exclude": ["node_modules"]
+}

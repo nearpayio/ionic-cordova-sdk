@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="nearpay-ionic-cordova-sdk" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<name>NearpayCordovaSDK</name>
+<js-module name="NearpayCordovaSDK" src="www/js/NearpayCordovaSDK.js">
+    <clobbers target="cordova.plugins.NearpayCordovaSDK" />
+    </js-module>
+
+    <platform name="ios">
+    <config-file parent="/*" target="config.xml">
+    <feature name="NearpayCordovaSDK">
+    <param name="ios-package" value="NearpayCordovaSDK" />
+    </feature>
+    </config-file>
+<source-file src="src/ios/NearpayCordovaSDK.m" />
+</platform>
+
+<platform name="android">
+ <framework src="io.nearpay:nearpay-sdk:2.1.88" />
+ <framework src="com.google.code.gson:gson:2.8.5" />
+    <config-file parent="/*" target="res/xml/config.xml">
+        <feature name="NearpayCordovaSDK">
+         <param name="android-package" value="com.nearpay.sdk.NearpayCordovaSDK" />
+
+          
+      </feature>
+      </config-file>
+      <config-file parent="/*" target="AndroidManifest.xml">
+    </config-file>
+          <source-file src="src/android/NearpayCordovaSDK.java" target-dir="app/src/main/java/com/nearpay/sdk" />
+                    <source-file src="src/android/common" target-dir="app/src/main/java/com/nearpay/sdk" />
+            </platform>
+            </plugin>
