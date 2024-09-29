@@ -12,7 +12,7 @@ Nearpay SDK for Embeded and Remote usage
 # Install plugin
 
 ```bash
-npm install @nearpaydev/nearpay-ionic-sdk --save
+cordova plugins add https://github.com/nearpayio/ionic-cordova-sdk
 
 Plugin will support minimum supported ANDROID SDK version 26 and above only.
 ```
