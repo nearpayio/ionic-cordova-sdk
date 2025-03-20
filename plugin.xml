@@ -15,7 +15,7 @@
 </platform>
 
 <platform name="android">
- <framework src="io.nearpay:nearpay-sdk:2.1.88" />
+ <framework src="io.nearpay:nearpay-sdk:2.1.91" />
  <framework src="com.google.code.gson:gson:2.8.5" />
     <config-file parent="/*" target="res/xml/config.xml">
         <feature name="NearpayCordovaSDK">
