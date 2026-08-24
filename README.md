@@ -20,7 +20,7 @@ Plugin will support minimum supported ANDROID SDK version 26 and above only.
 # EmbededNearpay (Android Only)
 
 ```typescript
-import { AuthenticationType, Environments, Locale } from 'plugins/nearpay-ionic-cordova-sdk/www/definitions';
+import { AuthenticationType, Environments, Locale, SupportSecondDisplay, PinPosition, UIPosition } from 'plugins/nearpay-ionic-cordova-sdk/www/definitions';
 import { EmbededNearpay, TransactionData, ReconciliationReceipt, TransactionBannerList, ReconciliationBannerList } from 'plugins/nearpay-ionic-cordova-sdk/www/NearpayCordovaSDK';
 
 const embededNearpay = new EmbededNearpay({
@@ -28,6 +28,11 @@ const embededNearpay = new EmbededNearpay({
       authvalue: 'a.khalifa@nearpay.io',
       environment: Environments.sandbox,
       locale: Locale.default,
+      supportSecondDisplay: SupportSecondDisplay.Enable, // [Optional] Enable dedicated customer-facing second display
+      secondDisplayConfiguration: { // [Optional] second display UI and PIN placement
+        uiPosition: UIPosition.CENTER,
+        pinPosition: PinPosition.SECONDARY_SCREEN,
+      },
     });
 ```
 
@@ -122,9 +127,9 @@ get a transaction by uuid
 
 ```typescript
 embededNearpay.getTransaction({
-  transactionUUID: 'a2fd6519-2b37-4336-be6d-5520bb3b6427', // Required, transaction uuid to fetch
-  onResult: receipts => {},
-  onFail: error => {},
+  transactionUUID: 'a2fd6519-2b37-4336-be6d-5520bb3b6427',
+  enableReceiptUi: true,
+  finishTimeOut: 10,
 });
 ```
 
@@ -136,8 +141,9 @@ get transactions
 embededNearpay.getTransactionsList({
   page: 1, // [Optional] page number
   limit: 20, // [Optional] number of elements per page
-  onResult: banner => {},
-  onFail: error => {},
+  customerReferenceNumber: '', // [Optional] filter by customer reference number
+  isReconciled: true, // [Optional] true = reconciled only, false = unreconciled only, omit = all
+  isApproved: true, // [Optional] true = approved only, false = declined only, omit = all
 });
 ```
 
@@ -170,6 +176,82 @@ embededNearpay.getReconciliationsList({
 
 ```typescript
 embededNearpay.logout();
+```
+
+### setup
+
+```typescript
+embededNearpay.setup();
+```
+
+### updateAuthentication
+
+```typescript
+embededNearpay.updateAuthentication({
+  authtype: AuthenticationType.email,
+  authvalue: 'user@example.com',
+  tid: 'optional-tid',
+});
+```
+
+### receiptToImage
+
+```typescript
+const pngBytes = await embededNearpay.receiptToImage({
+  receipt: transactionReceipt,
+  receiptWidth: 850,
+  receiptFontSize: 1,
+});
+```
+
+### reconciliationReceiptToImage
+
+```typescript
+const pngBytes = await embededNearpay.reconciliationReceiptToImage({
+  receipt: reconciliationReceipt,
+  receiptWidth: 850,
+  receiptFontSize: 1,
+});
+```
+
+### getUserSession
+
+```typescript
+embededNearpay.getUserSession({
+  onSessionInfo: session => {},
+  onSessionFree: () => {},
+  onSessionBusy: message => {},
+  onSessionFailed: error => {},
+});
+```
+
+### requestCancel
+
+```typescript
+embededNearpay.requestCancel({
+  requestId: transactionID, // same request id used in purchase
+  cancelWithReverse: false,
+});
+```
+
+### dismiss
+
+```typescript
+embededNearpay.dismiss();
+```
+
+### close
+
+```typescript
+embededNearpay.close();
+```
+
+### deviceCompatibility
+
+```typescript
+embededNearpay.deviceCompatibility().then(result => {
+  // result.compatible, result.message
+});
 ```
 
 ### Nearpay plugin response will be be in below formats

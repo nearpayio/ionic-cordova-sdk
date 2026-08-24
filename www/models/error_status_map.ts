@@ -86,12 +86,14 @@ export function PurchaseErrorMap(response: ApiResponse): PurchaseError {
 export function RefundErrorMap(response: ApiResponse): RefundError {
   switch (response.status) {
     case 405:
+    case 407:
       return {
         type: REFUND_ERROR_ENUM.DECLIEND,
         reciepts: response.result as TransactionData[],
       } as RefundDecielnd;
 
     case 406:
+    case 408:
       return {
         type: REFUND_ERROR_ENUM.REJECTED,
         message: response.message!,

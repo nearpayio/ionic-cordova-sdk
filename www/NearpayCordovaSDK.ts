@@ -41,6 +41,8 @@ export {
   Locale,
   NetworkConfig,
   UIPosition,
+  SupportSecondDisplay,
+  PinPosition,
 } from './definitions';
 export type {
   EmbededPurchaseOptions,
@@ -49,5 +51,14 @@ export type {
   EmbededReverseOptions,
   EmbededSessionOptions,
   EmbededInitializeOptions,
+  EmbededGetTransactionsListOptions,
+  SecondDisplayConfiguration,
+  EmbededRequestCancelOptions,
+  GetUserSessionOptions,
+  DeviceCompatibilityResult,
+  UserSession,
+  EmbededUpdateAuthenticationOptions,
+  EmbededReceiptToImageOptions,
+  EmbededReconciliationReceiptToImageOptions,
 } from './definitions';
 

@@ -2,7 +2,10 @@ package com.nearpay.sdk.common.filter;
 
 import android.annotation.SuppressLint;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Locale;
@@ -11,7 +14,10 @@ import java.util.UUID;
 
 import com.nearpay.sdk.common.PluginProvider;
 import io.nearpay.sdk.Environments;
+import io.nearpay.sdk.utils.SecondDisplayConfiguration;
 import io.nearpay.sdk.utils.enums.NetworkConfiguration;
+import io.nearpay.sdk.utils.enums.PinPosition;
+import io.nearpay.sdk.utils.enums.SupportSecondDisplay;
 import io.nearpay.sdk.utils.enums.UIPosition;
 
 public class ArgsFilter {
@@ -35,11 +41,11 @@ public class ArgsFilter {
     }
 
     public int getPage() {
-        return savedArgs.get("page") == null ? 1 : castToInt(savedArgs.get("page"));
+        return castToInt(savedArgs.get("page"), 1);
     }
 
     public int getLimit() {
-        return savedArgs.get("limit") == null ? 30 : castToInt(savedArgs.get("limit"));
+        return castToInt(savedArgs.get("limit"), 30);
     }
 
     public String getReceipt() {
@@ -47,11 +53,11 @@ public class ArgsFilter {
     }
 
     public int getReceiptWidth() {
-        return savedArgs.get("receipt_width") != null ? castToInt(savedArgs.get("receipt_width")) : 850;
+        return castToInt(savedArgs.get("receipt_width"), 850);
     }
 
     public int getReceiptFontSize() {
-        return savedArgs.get("receipt_font_size") != null ? castToInt(savedArgs.get("receipt_font_size")) : 1;
+        return castToInt(savedArgs.get("receipt_font_size"), 1);
     }
 
     public UUID getJobId() {
@@ -64,29 +70,24 @@ public class ArgsFilter {
     }
 
     public Long getAmount() {
-        Long amount;
-        if (savedArgs.get("amount") == null) {
-            amount = 1L;
-        } else {
-            amount = castToLong(savedArgs.get("amount"));
-        }
-        return amount;
+        return castToLong(savedArgs.get("amount"), 1L);
     }
 
     public Long getTimeout() {
-        Long timeout;
-        if (savedArgs.get("finishTimeout") == null) {
-            timeout = 60L;
-        } else {
-            timeout = castToLong(savedArgs.get("finishTimeout"));
+        Object timeoutValue = savedArgs.get("finishTimeout");
+        if (timeoutValue == null) {
+            timeoutValue = savedArgs.get("finishTimeOut");
         }
-
-        return timeout;
+        return castToLong(timeoutValue, 60L);
     }
 
     public String getCustomerReferenceNumber() {
-        return savedArgs.get("customer_reference_number") == null ? ""
-                : savedArgs.get("customer_reference_number").toString();
+        Object value = savedArgs.get("customer_reference_number");
+        if (value == null) {
+            return null;
+        }
+        String text = value.toString();
+        return text.isEmpty() ? null : text;
     }
 
     public String getAuthType() {
@@ -97,12 +98,24 @@ public class ArgsFilter {
         return savedArgs.get("authvalue") == null ? "" : savedArgs.get("authvalue").toString();
     }
 
+    public String getAuthTid() {
+        return savedArgs.get("tid") == null ? null : savedArgs.get("tid").toString();
+    }
+
     public String getSessionId() {
         return savedArgs.get("sessionID") == null ? "" : savedArgs.get("sessionID").toString();
     }
 
     public String getOriginalTransactionUuid() {
         return savedArgs.get("original_transaction_uuid").toString();
+    }
+
+    public Boolean isReconciled() {
+        return castToBoolean(savedArgs.get("isReconciled"));
+    }
+
+    public Boolean isApproved() {
+        return castToBoolean(savedArgs.get("isApproved"));
     }
 
     public Locale getLocale() {
@@ -116,6 +129,15 @@ public class ArgsFilter {
         return savedArgs.get("requestId") == null ? null : UUID.fromString((String) savedArgs.get("requestId"));
     }
 
+    public String getCancelRequestId() {
+        return savedArgs.get("requestId") == null ? "" : savedArgs.get("requestId").toString();
+    }
+
+    public Boolean getCancelWithReverse() {
+        Boolean value = castToBoolean(savedArgs.get("cancelWithReverse"));
+        return value != null ? value : false;
+    }
+
     public Environments getEnviroment() {
         String environmentStr = savedArgs.get("environment") == null ? "sandbox"
                 : savedArgs.get("environment").toString();
@@ -127,17 +149,62 @@ public class ArgsFilter {
 
     public NetworkConfiguration getNetworkConfiguration() {
 
-        String configStr = savedArgs.get("network_configuration") == null ? "default"
+        String configStr = savedArgs.get("network_configuration") == null ? "DEFAULT"
                 : savedArgs.get("network_configuration").toString();
+        String normalized = configStr.toUpperCase(Locale.ROOT);
 
-        NetworkConfiguration config = configStr.equals("sim_only") ? NetworkConfiguration.SIM_ONLY
-                : configStr.equals("production") ? NetworkConfiguration.SIM_PREFERRED : NetworkConfiguration.DEFAULT;
-
-        return config;
+        if (normalized.equals("SIM_ONLY")) {
+            return NetworkConfiguration.SIM_ONLY;
+        }
+        if (normalized.equals("SIM_PREFERRED")) {
+            return NetworkConfiguration.SIM_PREFERRED;
+        }
+        return NetworkConfiguration.DEFAULT;
     }
 
     public UIPosition getUiPosition() {
+        return getUiPositionFromKey("ui_position");
+    }
 
+    public SupportSecondDisplay getSupportSecondDisplay() {
+        Object value = savedArgs.get("support_second_display");
+        if (value == null) {
+            return null;
+        }
+
+        String supportStr = value.toString();
+        if (supportStr.equals("Enable")) {
+            return SupportSecondDisplay.Enable;
+        }
+        if (supportStr.equals("Disable")) {
+            return SupportSecondDisplay.Disable;
+        }
+        return null;
+    }
+
+    public SecondDisplayConfiguration getSecondDisplayConfiguration() {
+        UIPosition secondDisplayUiPosition = getUiPositionFromKey("second_display_ui_position");
+        PinPosition pinPosition = getPinPosition();
+        return new SecondDisplayConfiguration(secondDisplayUiPosition, pinPosition);
+    }
+
+    private PinPosition getPinPosition() {
+        Object value = savedArgs.get("second_display_pin_position");
+        if (value == null) {
+            return PinPosition.SECONDARY_SCREEN;
+        }
+
+        String pinStr = value.toString();
+        if (pinStr.equals("PRIMARY_SCREEN")) {
+            return PinPosition.PRIMARY_SCREEN;
+        }
+        if (pinStr.equals("SECONDARY_SCREEN")) {
+            return PinPosition.SECONDARY_SCREEN;
+        }
+        return PinPosition.SECONDARY_SCREEN;
+    }
+
+    private UIPosition getUiPositionFromKey(String key) {
         Map<String, UIPosition> uiPosMap = new HashMap<>();
 
         uiPosMap.put("TOP_START", UIPosition.TOP_START);
@@ -160,8 +227,8 @@ public class ArgsFilter {
 
         uiPosMap.put("DEFAULT", UIPosition.DEFAULT);
 
-        String uiPosStr = savedArgs.get("ui_position") == null ? "DEFAULT"
-                : savedArgs.get("ui_position").toString();
+        String uiPosStr = savedArgs.get(key) == null ? "DEFAULT"
+                : savedArgs.get(key).toString();
 
         UIPosition uiPos = uiPosMap.get(uiPosStr);
 
@@ -214,34 +281,79 @@ public class ArgsFilter {
 
     @SuppressLint("NewApi")
     private LocalDateTime getIsoDate(String fieldName) {
-        String isoDate = savedArgs.get(fieldName) != null ? (String) savedArgs.get(fieldName) : null;
-
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-
-        if (isoDate == null)
+        Object value = savedArgs.get(fieldName);
+        if (value == null) {
             return null;
-
-        return LocalDateTime.parse(isoDate, formatter);
-    }
-
-    private Long castToLong(Object beforeCast) {
-        if (beforeCast instanceof Integer) {
-            return Long.valueOf((Integer) beforeCast);
-        } else if (beforeCast instanceof Double) {
-            return Long.valueOf(((Double) beforeCast).longValue());
-        } else {
-            return (Long) beforeCast;
-
+        }
+        Long millis = toLongOrNull(value);
+        if (millis != null) {
+            return Instant.ofEpochMilli(millis)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
+        }
+        String text = value.toString();
+        if (text.isEmpty() || "null".equals(text)) {
+            return null;
+        }
+        try {
+            return Instant.parse(text).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        } catch (Exception ignored) {
+        }
+        try {
+            return OffsetDateTime.parse(text).toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
+        } catch (Exception ignored) {
+        }
+        try {
+            return LocalDateTime.parse(text, DateTimeFormatter.ISO_DATE_TIME);
+        } catch (Exception ignored) {
+            return null;
         }
     }
 
-    private int castToInt(Object beforeCast) {
-        if (beforeCast instanceof Long) {
-            return ((Long) beforeCast).intValue();
-        } else if (beforeCast instanceof Double) {
-            return ((Double) beforeCast).intValue();
-        } else {
-            return (int) beforeCast;
+    private Long toLongOrNull(Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
         }
+        String text = value.toString().trim();
+        if (text.isEmpty()) {
+            return null;
+        }
+        try {
+            if (text.contains(".") || text.contains("E") || text.contains("e")) {
+                return Double.valueOf(text).longValue();
+            }
+            return Long.parseLong(text);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    private Boolean castToBoolean(Object value) {
+        if (value == null) {
+            return null;
+        }
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        String text = value.toString();
+        if ("true".equalsIgnoreCase(text)) {
+            return true;
+        }
+        if ("false".equalsIgnoreCase(text)) {
+            return false;
+        }
+        return null;
+    }
+
+    private Long castToLong(Object beforeCast, long fallback) {
+        Long value = toLongOrNull(beforeCast);
+        return value != null ? value : fallback;
+    }
+
+    private int castToInt(Object beforeCast, int fallback) {
+        Long value = toLongOrNull(beforeCast);
+        return value != null ? value.intValue() : fallback;
     }
 }

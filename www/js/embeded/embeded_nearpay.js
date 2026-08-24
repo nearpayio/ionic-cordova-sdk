@@ -60,9 +60,10 @@ var EmbededNearpay = /** @class */ (function () {
     }
     EmbededNearpay.prototype.initialize = function (options) {
         return __awaiter(this, void 0, void 0, function () {
-            var data;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var data, _a;
+            var _b, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
                         data = {
                             authtype: options.authtype,
@@ -74,10 +75,14 @@ var EmbededNearpay = /** @class */ (function () {
                             loading_ui: options.loadingUi,
                             arabic_payment_text: options.arabicPaymentText,
                             english_payment_text: options.englishPaymentText,
+                            support_second_display: options.supportSecondDisplay,
+                            second_display_ui_position: (_b = options.secondDisplayConfiguration) === null || _b === void 0 ? void 0 : _b.uiPosition,
+                            second_display_pin_position: (_c = options.secondDisplayConfiguration) === null || _c === void 0 ? void 0 : _c.pinPosition,
                         };
+                        _a = this.parseSuccess;
                         return [4 /*yield*/, this.callMethod('initialize', data)];
                     case 1:
-                        _a.sent();
+                        _a.apply(this, [_d.sent()]);
                         return [2 /*return*/];
                 }
             });
@@ -85,49 +90,46 @@ var EmbededNearpay = /** @class */ (function () {
     };
     EmbededNearpay.prototype.purchase = function (options) {
         return __awaiter(this, void 0, void 0, function () {
-            var data, res, response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var data, _a;
+            var _b, _c, _d, _e;
+            return __generator(this, function (_f) {
+                switch (_f.label) {
                     case 0:
                         data = {
                             amount: options.amount,
-                            customer_reference_number: options.customerReferenceNumber || '',
-                            finishTimeout: options.finishTimeout || 60,
-                            enableReversal: options.enableReversalUi || true,
-                            enableReceiptUi: options.enableReceiptUi || true,
-                            enableUiDismiss: options.enableUiDismiss || true,
+                            customer_reference_number: options.customerReferenceNumber,
+                            finishTimeout: (_b = options.finishTimeout) !== null && _b !== void 0 ? _b : 60,
+                            enableReversal: (_c = options.enableReversalUi) !== null && _c !== void 0 ? _c : true,
+                            enableReceiptUi: (_d = options.enableReceiptUi) !== null && _d !== void 0 ? _d : true,
+                            enableUiDismiss: (_e = options.enableUiDismiss) !== null && _e !== void 0 ? _e : true,
                             job_id: options.transactionID,
                         };
+                        _a = this.parseSuccess;
                         return [4 /*yield*/, this.callMethod('purchase', data)];
-                    case 1:
-                        res = _a.sent();
-                        response = JSON.parse(res);
-                        return [2 /*return*/, response.result];
+                    case 1: return [2 /*return*/, _a.apply(this, [_f.sent(), error_status_map_1.PurchaseErrorMap])];
                 }
             });
         });
     };
     EmbededNearpay.prototype.refund = function (options) {
         return __awaiter(this, void 0, void 0, function () {
-            var data, res, response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var data, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         data = __assign({ amount: options.amount, original_transaction_uuid: options.originalTransactionUUID, job_id: options.transactionID, customer_reference_number: options.customerReferenceNumber, finishTimeout: options.finishTimeout, enableReversal: options.enableReversalUi, enableReceiptUi: options.enableReceiptUi, enableUiDismiss: options.enableUiDismiss, enableEditableRefundAmountUi: options.editableRefundAmountUI }, (options.adminPin !== undefined ? { adminPin: options.adminPin } : null));
+                        _a = this.parseSuccess;
                         return [4 /*yield*/, this.callMethod('refund', data)];
-                    case 1:
-                        res = _a.sent();
-                        response = JSON.parse(res);
-                        return [2 /*return*/, response.result];
+                    case 1: return [2 /*return*/, _a.apply(this, [_b.sent(), error_status_map_1.RefundErrorMap])];
                 }
             });
         });
     };
     EmbededNearpay.prototype.reverse = function (options) {
         return __awaiter(this, void 0, void 0, function () {
-            var data, res, response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var data, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         data = {
                             original_transaction_uuid: options.originalTransactionUUID,
@@ -135,36 +137,32 @@ var EmbededNearpay = /** @class */ (function () {
                             enableUiDismiss: options.enableUiDismiss,
                             enableReceiptUi: options.enableReceiptUi,
                         };
+                        _a = this.parseSuccess;
                         return [4 /*yield*/, this.callMethod('reverse', data)];
-                    case 1:
-                        res = _a.sent();
-                        response = JSON.parse(res);
-                        return [2 /*return*/, response.result];
+                    case 1: return [2 /*return*/, _a.apply(this, [_b.sent(), error_status_map_1.ReverseErrorMap])];
                 }
             });
         });
     };
     EmbededNearpay.prototype.reconcile = function (options) {
         return __awaiter(this, void 0, void 0, function () {
-            var data, res, response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var data, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         data = __assign({ finishTimeout: options.finishTimeout, enableReceiptUi: options.enableReceiptUi, enableUiDismiss: options.enableUiDismiss }, (options.adminPin !== undefined ? { adminPin: options.adminPin } : null));
+                        _a = this.parseSuccess;
                         return [4 /*yield*/, this.callMethod('reconcile', data)];
-                    case 1:
-                        res = _a.sent();
-                        response = JSON.parse(res);
-                        return [2 /*return*/, response.result];
+                    case 1: return [2 /*return*/, _a.apply(this, [_b.sent(), error_status_map_1.ReconcileErrorMap])];
                 }
             });
         });
     };
     EmbededNearpay.prototype.session = function (options) {
         return __awaiter(this, void 0, void 0, function () {
-            var data, res;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var data, response, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         data = {
                             sessionID: options.sessionID,
@@ -173,17 +171,18 @@ var EmbededNearpay = /** @class */ (function () {
                             enableReversal: options.enableReversalUi,
                             enableReceiptUi: options.enableReceiptUi,
                         };
+                        _a = this.parseResponse;
                         return [4 /*yield*/, this.callMethod('session', data)];
                     case 1:
-                        res = _a.sent();
-                        if (res.status === 200 && options.onSessionOpen) {
-                            options.onSessionOpen(res.receipts);
+                        response = _a.apply(this, [_b.sent()]);
+                        if (response.status === 200 && options.onSessionOpen) {
+                            options.onSessionOpen(response.result);
                         }
-                        else if (res.status === 500 && options.onSessionClose) {
-                            options.onSessionClose(res.session);
+                        else if (response.status === 210 && options.onSessionClose) {
+                            options.onSessionClose(response.result);
                         }
                         else if (options.onSessionFailed) {
-                            options.onSessionFailed((0, error_status_map_1.SessionErrorMap)(res));
+                            options.onSessionFailed((0, error_status_map_1.SessionErrorMap)(response));
                         }
                         return [2 /*return*/];
                 }
@@ -192,11 +191,187 @@ var EmbededNearpay = /** @class */ (function () {
     };
     EmbededNearpay.prototype.logout = function () {
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.callMethod('logout', {})];
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = this.parseSuccess;
+                        return [4 /*yield*/, this.callMethod('logout', {})];
                     case 1:
-                        _a.sent();
+                        _a.apply(this, [_b.sent()]);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    EmbededNearpay.prototype.setup = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = this.parseSuccess;
+                        return [4 /*yield*/, this.callMethod('setup', {})];
+                    case 1:
+                        _a.apply(this, [_b.sent()]);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    EmbededNearpay.prototype.updateAuthentication = function (options) {
+        return __awaiter(this, void 0, void 0, function () {
+            var data, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        data = {
+                            authtype: options.authtype,
+                            authvalue: options.authvalue,
+                            tid: options.tid,
+                        };
+                        _a = this.parseSuccess;
+                        return [4 /*yield*/, this.callMethod('updateAuthentication', data)];
+                    case 1:
+                        _a.apply(this, [_b.sent()]);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    EmbededNearpay.prototype.receiptToImage = function (options) {
+        return __awaiter(this, void 0, void 0, function () {
+            var data, bytes, _a;
+            var _b, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        data = {
+                            receipt: JSON.stringify(options.receipt),
+                            receipt_width: (_b = options.receiptWidth) !== null && _b !== void 0 ? _b : 850,
+                            receipt_font_size: (_c = options.receiptFontSize) !== null && _c !== void 0 ? _c : 1,
+                        };
+                        _a = this.parseSuccess;
+                        return [4 /*yield*/, this.callMethod('receiptToImage', data)];
+                    case 1:
+                        bytes = _a.apply(this, [_d.sent()]);
+                        return [2 /*return*/, Uint8Array.from(bytes)];
+                }
+            });
+        });
+    };
+    EmbededNearpay.prototype.reconciliationReceiptToImage = function (options) {
+        return __awaiter(this, void 0, void 0, function () {
+            var data, bytes, _a;
+            var _b, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        data = {
+                            receipt: JSON.stringify(options.receipt),
+                            receipt_width: (_b = options.receiptWidth) !== null && _b !== void 0 ? _b : 850,
+                            receipt_font_size: (_c = options.receiptFontSize) !== null && _c !== void 0 ? _c : 1,
+                        };
+                        _a = this.parseSuccess;
+                        return [4 /*yield*/, this.callMethod('reconciliationReceiptToImage', data)];
+                    case 1:
+                        bytes = _a.apply(this, [_d.sent()]);
+                        return [2 /*return*/, Uint8Array.from(bytes)];
+                }
+            });
+        });
+    };
+    EmbededNearpay.prototype.requestCancel = function (options) {
+        return __awaiter(this, void 0, void 0, function () {
+            var data, _a, _b;
+            var _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        data = {
+                            requestId: options.requestId,
+                            cancelWithReverse: (_c = options.cancelWithReverse) !== null && _c !== void 0 ? _c : false,
+                        };
+                        _a = Boolean;
+                        _b = this.parseSuccess;
+                        return [4 /*yield*/, this.callMethod('requestCancel', data)];
+                    case 1: return [2 /*return*/, _a.apply(void 0, [_b.apply(this, [_d.sent()])])];
+                }
+            });
+        });
+    };
+    EmbededNearpay.prototype.dismiss = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _a = Boolean;
+                        _b = this.parseSuccess;
+                        return [4 /*yield*/, this.callMethod('dismiss', {})];
+                    case 1: return [2 /*return*/, _a.apply(void 0, [_b.apply(this, [_c.sent()])])];
+                }
+            });
+        });
+    };
+    EmbededNearpay.prototype.close = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = this.parseSuccess;
+                        return [4 /*yield*/, this.callMethod('close', {})];
+                    case 1:
+                        _a.apply(this, [_b.sent()]);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    EmbededNearpay.prototype.deviceCompatibility = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var response, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = this.parseResponse;
+                        return [4 /*yield*/, this.callMethod('deviceCompatibility', {})];
+                    case 1:
+                        response = _a.apply(this, [_b.sent()]);
+                        if (response.status === 200) {
+                            return [2 /*return*/, { compatible: true, message: response.message }];
+                        }
+                        if (response.status === 413) {
+                            return [2 /*return*/, { compatible: false, message: response.message }];
+                        }
+                        throw this.toError(response);
+                }
+            });
+        });
+    };
+    EmbededNearpay.prototype.getUserSession = function (options) {
+        return __awaiter(this, void 0, void 0, function () {
+            var response, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = this.parseResponse;
+                        return [4 /*yield*/, this.callMethod('getUserSession', {})];
+                    case 1:
+                        response = _a.apply(this, [_b.sent()]);
+                        if (response.status === 200) {
+                            options.onSessionInfo(response.result);
+                        }
+                        else if (response.status === 201) {
+                            options.onSessionFree();
+                        }
+                        else if (response.status === 202) {
+                            options.onSessionBusy(response.message);
+                        }
+                        else {
+                            options.onSessionFailed(response);
+                        }
                         return [2 /*return*/];
                 }
             });
@@ -204,82 +379,106 @@ var EmbededNearpay = /** @class */ (function () {
     };
     EmbededNearpay.prototype.getTransactionsList = function (options) {
         return __awaiter(this, void 0, void 0, function () {
-            var data, res, response;
-            var _a, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var data, _a;
+            var _b, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
                         data = {
                             limit: options.limit,
                             page: options.page,
-                            start_date: (_a = options.startDate) === null || _a === void 0 ? void 0 : _a.toISOString(),
-                            end_date: (_b = options.endDate) === null || _b === void 0 ? void 0 : _b.toISOString(),
+                            start_date: (_b = options.startDate) === null || _b === void 0 ? void 0 : _b.getTime(),
+                            end_date: (_c = options.endDate) === null || _c === void 0 ? void 0 : _c.getTime(),
+                            customer_reference_number: options.customerReferenceNumber,
+                            isReconciled: options.isReconciled,
+                            isApproved: options.isApproved,
                         };
+                        _a = this.parseSuccess;
                         return [4 /*yield*/, this.callMethod('getTransactionsList', data)];
-                    case 1:
-                        res = _c.sent();
-                        response = JSON.parse(res);
-                        return [2 /*return*/, response.result];
+                    case 1: return [2 /*return*/, _a.apply(this, [_d.sent(), error_status_map_1.QueryErrorMap])];
                 }
             });
         });
     };
     EmbededNearpay.prototype.getTransaction = function (options) {
         return __awaiter(this, void 0, void 0, function () {
-            var data, res, response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var data, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         data = {
                             transaction_uuid: options.transactionUUID,
+                            enableReceiptUi: options.enableReceiptUi,
+                            finishTimeout: options.finishTimeOut,
                         };
+                        _a = this.parseSuccess;
                         return [4 /*yield*/, this.callMethod('getTransaction', data)];
-                    case 1:
-                        res = _a.sent();
-                        response = JSON.parse(res);
-                        return [2 /*return*/, response.result];
+                    case 1: return [2 /*return*/, _a.apply(this, [_b.sent(), error_status_map_1.QueryErrorMap])];
                 }
             });
         });
     };
     EmbededNearpay.prototype.getReconciliationsList = function (options) {
         return __awaiter(this, void 0, void 0, function () {
-            var data, res, response;
-            var _a, _b;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var data, _a;
+            var _b, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
                         data = {
                             limit: options.limit,
                             page: options.page,
-                            start_date: (_a = options.startDate) === null || _a === void 0 ? void 0 : _a.toISOString(),
-                            end_date: (_b = options.endDate) === null || _b === void 0 ? void 0 : _b.toISOString(),
+                            start_date: (_b = options.startDate) === null || _b === void 0 ? void 0 : _b.getTime(),
+                            end_date: (_c = options.endDate) === null || _c === void 0 ? void 0 : _c.getTime(),
                         };
+                        _a = this.parseSuccess;
                         return [4 /*yield*/, this.callMethod('getReconciliationsList', data)];
-                    case 1:
-                        res = _c.sent();
-                        response = JSON.parse(res);
-                        return [2 /*return*/, response.result];
+                    case 1: return [2 /*return*/, _a.apply(this, [_d.sent(), error_status_map_1.QueryErrorMap])];
                 }
             });
         });
     };
     EmbededNearpay.prototype.getReconciliation = function (options) {
         return __awaiter(this, void 0, void 0, function () {
-            var data, res, response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var data, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         data = {
                             reconciliation_uuid: options.reconciliationUUID,
+                            enableReceiptUi: options.enableReceiptUi,
+                            finishTimeout: options.finishTimeOut,
                         };
+                        _a = this.parseSuccess;
                         return [4 /*yield*/, this.callMethod('getReconciliation', data)];
-                    case 1:
-                        res = _a.sent();
-                        response = JSON.parse(res);
-                        return [2 /*return*/, response.result];
+                    case 1: return [2 /*return*/, _a.apply(this, [_b.sent(), error_status_map_1.QueryErrorMap])];
                 }
             });
+        });
+    };
+    EmbededNearpay.prototype.parseResponse = function (res) {
+        return typeof res === 'string' ? JSON.parse(res) : res;
+    };
+    EmbededNearpay.prototype.parseSuccess = function (res, mapError) {
+        var response = this.parseResponse(res);
+        if (response.status !== 200) {
+            throw this.toError(response, mapError);
+        }
+        return response.result;
+    };
+    EmbededNearpay.prototype.toError = function (response, mapError) {
+        var nearpayError;
+        try {
+            nearpayError = mapError === null || mapError === void 0 ? void 0 : mapError(response);
+        }
+        catch (_a) {
+            nearpayError = undefined;
+        }
+        var message = response.message || "Nearpay operation failed with status ".concat(response.status);
+        return Object.assign(new Error(message), {
+            status: response.status,
+            result: response.result,
+            nearpayError: nearpayError,
         });
     };
     EmbededNearpay.prototype.callMethod = function (name, options) {

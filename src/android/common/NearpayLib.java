@@ -24,17 +24,32 @@ public class NearpayLib {
     }
 
     public static AuthenticationData getAuthType(String authType, String inputValue) {
-        AuthenticationData authentication = authType.equals("userenter") ? AuthenticationData.UserEnter.INSTANCE
-                : authType.equals("email") ? new AuthenticationData.Email(inputValue)
-                        : authType.equals("mobile") ? new AuthenticationData.Mobile(inputValue)
-                                : authType.equals("jwt") ? new AuthenticationData.Jwt(inputValue)
-                                        : AuthenticationData.UserEnter.INSTANCE;
-        return authentication;
+        return getAuthType(authType, inputValue, null);
+    }
+
+    public static AuthenticationData getAuthType(String authType, String inputValue, String tid) {
+        if (authType.equals("userenter")) {
+            return AuthenticationData.UserEnter.INSTANCE;
+        }
+        if (authType.equals("email")) {
+            return tid != null && !tid.isEmpty() ? new AuthenticationData.Email(inputValue, tid)
+                    : new AuthenticationData.Email(inputValue);
+        }
+        if (authType.equals("mobile")) {
+            return tid != null && !tid.isEmpty() ? new AuthenticationData.Mobile(inputValue, tid)
+                    : new AuthenticationData.Mobile(inputValue);
+        }
+        if (authType.equals("jwt")) {
+            return new AuthenticationData.Jwt(inputValue);
+        }
+        return AuthenticationData.UserEnter.INSTANCE;
     }
 
     public boolean isAuthInputValidation(String authType, String inputValue) {
-        boolean isAuthValidate = authType.equals("userenter") ? true : inputValue == "" ? false : true;
-        return isAuthValidate;
+        if ("userenter".equals(authType)) {
+            return true;
+        }
+        return inputValue != null && !inputValue.trim().isEmpty();
     }
 
     public static Map<String, Object> ApiResponse(int responseCode, String message, Object data) {

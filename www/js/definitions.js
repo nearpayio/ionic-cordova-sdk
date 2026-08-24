@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UIPosition = exports.NetworkConfig = exports.Locale = exports.AuthenticationType = exports.Environments = void 0;
+exports.PinPosition = exports.SupportSecondDisplay = exports.UIPosition = exports.NetworkConfig = exports.Locale = exports.AuthenticationType = exports.Environments = void 0;
 var Environments;
 (function (Environments) {
     Environments["sandbox"] = "sandbox";
@@ -43,3 +43,13 @@ var UIPosition;
     UIPosition["CENTER"] = "CENTER";
     UIPosition["DEFAULT"] = "DEFAULT";
 })(UIPosition || (exports.UIPosition = UIPosition = {}));
+var SupportSecondDisplay;
+(function (SupportSecondDisplay) {
+    SupportSecondDisplay["Enable"] = "Enable";
+    SupportSecondDisplay["Disable"] = "Disable";
+})(SupportSecondDisplay || (exports.SupportSecondDisplay = SupportSecondDisplay = {}));
+var PinPosition;
+(function (PinPosition) {
+    PinPosition["PRIMARY_SCREEN"] = "PRIMARY_SCREEN";
+    PinPosition["SECONDARY_SCREEN"] = "SECONDARY_SCREEN";
+})(PinPosition || (exports.PinPosition = PinPosition = {}));

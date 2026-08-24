@@ -34,7 +34,12 @@ public class OperatorFactory {
         map.put("getTransaction", new GetTransactionOperation(provider));
         map.put("getTransactionsList", new GetTransactionPageOperation(provider));
         map.put("receiptToImage", new ReceiptToImageOperation(provider));
-        // more operators
+        map.put("reconciliationReceiptToImage", new ReconciliationReceiptToImageOperation(provider));
+        map.put("getUserSession", new GetUserSessionOperation(provider));
+        map.put("requestCancel", new RequestCancelOperation(provider));
+        map.put("dismiss", new DismissOperation(provider));
+        map.put("close", new CloseOperation(provider));
+        map.put("deviceCompatibility", new DeviceCompatibilityOperation(provider));
 
         return map;
     }

@@ -45,11 +45,13 @@ function PurchaseErrorMap(response) {
 function RefundErrorMap(response) {
     switch (response.status) {
         case 405:
+        case 407:
             return {
                 type: errors_1.REFUND_ERROR_ENUM.DECLIEND,
                 reciepts: response.result,
             };
         case 406:
+        case 408:
             return {
                 type: errors_1.REFUND_ERROR_ENUM.REJECTED,
                 message: response.message,

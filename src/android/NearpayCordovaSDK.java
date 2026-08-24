@@ -2,29 +2,22 @@ package com.nearpay.sdk;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
-import org.apache.cordova.PluginResult;
-import org.apache.cordova.CordovaInterface;
-import org.apache.cordova.CordovaWebView;
-import android.webkit.WebView;
-import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.Date;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import com.google.gson.Gson;
 
 import com.nearpay.sdk.common.PluginProvider;
 import com.nearpay.sdk.common.filter.ArgsFilter;
 import com.nearpay.sdk.common.operations.BaseOperation;
 import com.nearpay.sdk.common.operations.OperatorFactory;
 import com.nearpay.sdk.common.sender.NearpaySender;
-import android.content.Context;
 
-/**
- * This class echoes a string called from JavaScript.
- */
 public class NearpayCordovaSDK extends CordovaPlugin {
   PluginProvider provider = new PluginProvider();
   public OperatorFactory operatorFactory = new OperatorFactory(provider);
@@ -38,20 +31,13 @@ public class NearpayCordovaSDK extends CordovaPlugin {
 
   private void runOperation(String opName, JSONArray args, CallbackContext callbackContext) {
     try {
-      // Check if the first argument is a JSONObject, not a JSONArray
       if (args.length() > 0 && args.get(0) instanceof JSONObject) {
-        JSONObject jsonObject = args.getJSONObject(0);
-
-        // Convert JSONObject to a Map
-        Map<String, Object> result = new Gson().fromJson(jsonObject.toString(), HashMap.class);
-
+        Map<String, Object> result = jsonToMap(args.getJSONObject(0));
         ArgsFilter filter = new ArgsFilter(result);
 
-        // Get the operation
         BaseOperation operation = operatorFactory.getOperation(opName)
             .orElseThrow(() -> new IllegalArgumentException("Invalid Operation"));
 
-        // Define the sender
         NearpaySender sender = (Object data) -> {
           try {
             JSONObject responseObject = new JSONObject((Map) data);
@@ -60,7 +46,6 @@ public class NearpayCordovaSDK extends CordovaPlugin {
             callbackContext.error("Error converting data to JSON: " + e.getMessage());
           }
         };
-        // Run the operation
         operation.run(filter, sender);
       } else {
         callbackContext.error("Expected a JSON object in args[0]");
@@ -72,4 +57,32 @@ public class NearpayCordovaSDK extends CordovaPlugin {
     }
   }
 
+  private Map<String, Object> jsonToMap(JSONObject object) throws JSONException {
+    Map<String, Object> map = new HashMap<>();
+    Iterator<String> keys = object.keys();
+    while (keys.hasNext()) {
+      String key = keys.next();
+      Object value = object.get(key);
+      map.put(key, unwrapJson(value));
+    }
+    return map;
+  }
+
+  private Object unwrapJson(Object value) throws JSONException {
+    if (value == null || value == JSONObject.NULL) {
+      return null;
+    }
+    if (value instanceof JSONObject) {
+      return jsonToMap((JSONObject) value);
+    }
+    if (value instanceof JSONArray) {
+      JSONArray array = (JSONArray) value;
+      List<Object> list = new ArrayList<>();
+      for (int i = 0; i < array.length(); i++) {
+        list.add(unwrapJson(array.get(i)));
+      }
+      return list;
+    }
+    return value;
+  }
 }

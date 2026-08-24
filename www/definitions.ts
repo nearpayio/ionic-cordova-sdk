@@ -1,4 +1,4 @@
-import { SessionData, TransactionData } from '@nearpaydev/nearpay-ts-sdk';
+import { ReconciliationReceipt, SessionData, TransactionData, TransactionReceipt } from '@nearpaydev/nearpay-ts-sdk';
 import {
   PurchaseError,
   QueryError,
@@ -35,6 +35,8 @@ export type EmbededInitializeOptions = {
   englishPaymentText?: string;
   uiPosition?: UIPosition;
   loadingUi?: boolean;
+  supportSecondDisplay?: SupportSecondDisplay;
+  secondDisplayConfiguration?: SecondDisplayConfiguration;
 };
 
 
@@ -63,6 +65,21 @@ export enum UIPosition {
   CENTER = 'CENTER',
   DEFAULT = 'DEFAULT',
 }
+
+export enum SupportSecondDisplay {
+  Enable = 'Enable',
+  Disable = 'Disable',
+}
+
+export enum PinPosition {
+  PRIMARY_SCREEN = 'PRIMARY_SCREEN',
+  SECONDARY_SCREEN = 'SECONDARY_SCREEN',
+}
+
+export type SecondDisplayConfiguration = {
+  uiPosition?: UIPosition;
+  pinPosition?: PinPosition;
+};
 
 export type EmbededPurchaseOptions = {
   amount: number;
@@ -117,10 +134,15 @@ export type EmbededGetTransactionsListOptions = {
   limit?: number;
   startDate?: Date;
   endDate?: Date;
+  customerReferenceNumber?: string;
+  isReconciled?: boolean;
+  isApproved?: boolean;
 };
 
 export type EmbededGetTransactionOptions = {
   transactionUUID: string;
+  enableReceiptUi?: boolean;
+  finishTimeOut?: number;
 };
 
 export type EmbededGetReconciliationsListOptions = {
@@ -132,6 +154,52 @@ export type EmbededGetReconciliationsListOptions = {
 
 export type EmbededGetReconciliationOptions = {
   reconciliationUUID: string;
+  enableReceiptUi?: boolean;
+  finishTimeOut?: number;
+};
+
+export type UserSession = {
+  userName?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  tid?: string | null;
+  merchantEn?: string | null;
+  merchantAr?: string | null;
+};
+
+export type EmbededRequestCancelOptions = {
+  requestId: string;
+  cancelWithReverse?: boolean;
+};
+
+export type GetUserSessionOptions = {
+  onSessionInfo: (session: UserSession) => void;
+  onSessionFree: () => void;
+  onSessionBusy: (message: string) => void;
+  onSessionFailed: (error: any) => void;
+};
+
+export type DeviceCompatibilityResult = {
+  compatible: boolean;
+  message?: string;
+};
+
+export type EmbededUpdateAuthenticationOptions = {
+  authtype: AuthenticationType;
+  authvalue: string;
+  tid?: string;
+};
+
+export type EmbededReceiptToImageOptions = {
+  receipt: TransactionReceipt;
+  receiptWidth?: number;
+  receiptFontSize?: number;
+};
+
+export type EmbededReconciliationReceiptToImageOptions = {
+  receipt: ReconciliationReceipt | ReconciliationReceipt[];
+  receiptWidth?: number;
+  receiptFontSize?: number;
 };
 
 export type NearpayPluginDefenetions = {
@@ -147,6 +215,14 @@ export type NearpayPluginDefenetions = {
   getTransaction: (options: any) => Promise<any>;
   getReconciliationsList: (options: any) => Promise<any>;
   getReconciliation: (options: any) => Promise<any>;
+  getUserSession: (options: any) => Promise<any>;
+  requestCancel: (options: any) => Promise<any>;
+  dismiss: (options: any) => Promise<any>;
+  close: (options: any) => Promise<any>;
+  deviceCompatibility: (options: any) => Promise<any>;
+  updateAuthentication: (options: any) => Promise<any>;
+  receiptToImage: (options: any) => Promise<any>;
+  reconciliationReceiptToImage: (options: any) => Promise<any>;
   proxyShowConnection: (options: any) => Promise<void>;
   proxyDisconnect: (options: any) => Promise<void>;
 };

@@ -12,6 +12,12 @@ import {
   EmbededGetTransactionOptions,
   EmbededGetReconciliationsListOptions,
   EmbededGetReconciliationOptions,
+  EmbededRequestCancelOptions,
+  GetUserSessionOptions,
+  DeviceCompatibilityResult,
+  EmbededUpdateAuthenticationOptions,
+  EmbededReceiptToImageOptions,
+  EmbededReconciliationReceiptToImageOptions,
 } from '../definitions';
 import { ApiResponse } from '../models/api_response';
 import {
@@ -53,24 +59,25 @@ export class EmbededNearpay {
       loading_ui: options.loadingUi,
       arabic_payment_text: options.arabicPaymentText,
       english_payment_text: options.englishPaymentText,
+      support_second_display: options.supportSecondDisplay,
+      second_display_ui_position: options.secondDisplayConfiguration?.uiPosition,
+      second_display_pin_position: options.secondDisplayConfiguration?.pinPosition,
     };
-    await this.callMethod('initialize', data);
+    this.parseSuccess(await this.callMethod('initialize', data));
   }
 
   async purchase(options: EmbededPurchaseOptions): Promise<TransactionData> {
     const data = {
       amount: options.amount,
-      customer_reference_number: options.customerReferenceNumber || '',
-      finishTimeout: options.finishTimeout || 60,
-      enableReversal: options.enableReversalUi || true,
-      enableReceiptUi: options.enableReceiptUi || true,
-      enableUiDismiss: options.enableUiDismiss || true,
+      customer_reference_number: options.customerReferenceNumber,
+      finishTimeout: options.finishTimeout ?? 60,
+      enableReversal: options.enableReversalUi ?? true,
+      enableReceiptUi: options.enableReceiptUi ?? true,
+      enableUiDismiss: options.enableUiDismiss ?? true,
       job_id: options.transactionID,
     };
 
-    const res = await this.callMethod('purchase', data);
-    const response = JSON.parse(res);
-    return response.result;
+    return this.parseSuccess(await this.callMethod('purchase', data), PurchaseErrorMap);
   }
 
   async refund(options: EmbededRefundOptions): Promise<TransactionData> {
@@ -87,9 +94,7 @@ export class EmbededNearpay {
       ...(options.adminPin !== undefined ? { adminPin: options.adminPin } : null),
     };
 
-    const res = await this.callMethod('refund', data);
-    const response = JSON.parse(res);
-    return response.result;
+    return this.parseSuccess(await this.callMethod('refund', data), RefundErrorMap);
   }
 
   async reverse(options: EmbededReverseOptions): Promise<TransactionData> {
@@ -100,9 +105,7 @@ export class EmbededNearpay {
       enableReceiptUi: options.enableReceiptUi,
     };
 
-    const res = await this.callMethod('reverse', data);
-    const response = JSON.parse(res);
-    return response.result;
+    return this.parseSuccess(await this.callMethod('reverse', data), ReverseErrorMap);
   }
 
   async reconcile(options: EmbededReconcileOptions): Promise<[ReconciliationReceipt]> {
@@ -113,9 +116,7 @@ export class EmbededNearpay {
       ...(options.adminPin !== undefined ? { adminPin: options.adminPin } : null),
     };
 
-    const res = await this.callMethod('reconcile', data);
-    const response = JSON.parse(res);
-    return response.result;
+    return this.parseSuccess(await this.callMethod('reconcile', data), ReconcileErrorMap);
   }
 
   async session(options: EmbededSessionOptions): Promise<void> {
@@ -127,64 +128,165 @@ export class EmbededNearpay {
       enableReceiptUi: options.enableReceiptUi,
     };
 
-    const res = await this.callMethod('session', data);
-    if (res.status === 200 && options.onSessionOpen) {
-      options.onSessionOpen(res.receipts as TransactionData);
-    } else if (res.status === 500 && options.onSessionClose) {
-      options.onSessionClose(res.session!);
+    const response = this.parseResponse(await this.callMethod('session', data));
+    if (response.status === 200 && options.onSessionOpen) {
+      options.onSessionOpen(response.result as TransactionData);
+    } else if (response.status === 210 && options.onSessionClose) {
+      options.onSessionClose(response.result);
     } else if (options.onSessionFailed) {
-      options.onSessionFailed(SessionErrorMap(res));
+      options.onSessionFailed(SessionErrorMap(response));
     }
   }
 
   async logout() {
-    await this.callMethod('logout', {});
+    this.parseSuccess(await this.callMethod('logout', {}));
+  }
+
+  async setup() {
+    this.parseSuccess(await this.callMethod('setup', {}));
+  }
+
+  async updateAuthentication(options: EmbededUpdateAuthenticationOptions) {
+    const data = {
+      authtype: options.authtype,
+      authvalue: options.authvalue,
+      tid: options.tid,
+    };
+    this.parseSuccess(await this.callMethod('updateAuthentication', data));
+  }
+
+  async receiptToImage(options: EmbededReceiptToImageOptions): Promise<Uint8Array> {
+    const data = {
+      receipt: JSON.stringify(options.receipt),
+      receipt_width: options.receiptWidth ?? 850,
+      receipt_font_size: options.receiptFontSize ?? 1,
+    };
+    const bytes = this.parseSuccess(await this.callMethod('receiptToImage', data));
+    return Uint8Array.from(bytes);
+  }
+
+  async reconciliationReceiptToImage(
+    options: EmbededReconciliationReceiptToImageOptions,
+  ): Promise<Uint8Array> {
+    const data = {
+      receipt: JSON.stringify(options.receipt),
+      receipt_width: options.receiptWidth ?? 850,
+      receipt_font_size: options.receiptFontSize ?? 1,
+    };
+    const bytes = this.parseSuccess(await this.callMethod('reconciliationReceiptToImage', data));
+    return Uint8Array.from(bytes);
+  }
+
+  async requestCancel(options: EmbededRequestCancelOptions): Promise<boolean> {
+    const data = {
+      requestId: options.requestId,
+      cancelWithReverse: options.cancelWithReverse ?? false,
+    };
+    return Boolean(this.parseSuccess(await this.callMethod('requestCancel', data)));
+  }
+
+  async dismiss(): Promise<boolean> {
+    return Boolean(this.parseSuccess(await this.callMethod('dismiss', {})));
+  }
+
+  async close(): Promise<void> {
+    this.parseSuccess(await this.callMethod('close', {}));
+  }
+
+  async deviceCompatibility(): Promise<DeviceCompatibilityResult> {
+    const response = this.parseResponse(await this.callMethod('deviceCompatibility', {}));
+    if (response.status === 200) {
+      return { compatible: true, message: response.message };
+    }
+    if (response.status === 413) {
+      return { compatible: false, message: response.message };
+    }
+    throw this.toError(response);
+  }
+
+  async getUserSession(options: GetUserSessionOptions): Promise<void> {
+    const response = this.parseResponse(await this.callMethod('getUserSession', {}));
+    if (response.status === 200) {
+      options.onSessionInfo(response.result);
+    } else if (response.status === 201) {
+      options.onSessionFree();
+    } else if (response.status === 202) {
+      options.onSessionBusy(response.message);
+    } else {
+      options.onSessionFailed(response);
+    }
   }
 
   async getTransactionsList(options: EmbededGetTransactionsListOptions): Promise<TransactionBannerList> {
     const data = {
       limit: options.limit,
       page: options.page,
-      start_date: options.startDate?.toISOString(),
-      end_date: options.endDate?.toISOString(),
+      start_date: options.startDate?.getTime(),
+      end_date: options.endDate?.getTime(),
+      customer_reference_number: options.customerReferenceNumber,
+      isReconciled: options.isReconciled,
+      isApproved: options.isApproved,
     };
 
-    const res = await this.callMethod('getTransactionsList', data);
-    const response = JSON.parse(res);
-    return response.result;
+    return this.parseSuccess(await this.callMethod('getTransactionsList', data), QueryErrorMap);
   }
 
   async getTransaction(options: EmbededGetTransactionOptions): Promise<TransactionData> {
     const data = {
       transaction_uuid: options.transactionUUID,
+      enableReceiptUi: options.enableReceiptUi,
+      finishTimeout: options.finishTimeOut,
     };
 
-    const res = await this.callMethod('getTransaction', data);
-    const response = JSON.parse(res);
-    return response.result;
+    return this.parseSuccess(await this.callMethod('getTransaction', data), QueryErrorMap);
   }
 
   async getReconciliationsList(options: EmbededGetReconciliationsListOptions): Promise<ReconciliationBannerList> {
     const data = {
       limit: options.limit,
       page: options.page,
-      start_date: options.startDate?.toISOString(),
-      end_date: options.endDate?.toISOString(),
+      start_date: options.startDate?.getTime(),
+      end_date: options.endDate?.getTime(),
     };
 
-    const res = await this.callMethod('getReconciliationsList', data);
-    const response = JSON.parse(res);
-    return response.result;
+    return this.parseSuccess(await this.callMethod('getReconciliationsList', data), QueryErrorMap);
   }
 
   async getReconciliation(options: EmbededGetReconciliationOptions): Promise<ReconciliationReceipt> {
     const data = {
       reconciliation_uuid: options.reconciliationUUID,
+      enableReceiptUi: options.enableReceiptUi,
+      finishTimeout: options.finishTimeOut,
     };
 
-    const res = await this.callMethod('getReconciliation', data);
-    const response = JSON.parse(res);
+    return this.parseSuccess(await this.callMethod('getReconciliation', data), QueryErrorMap);
+  }
+
+  private parseResponse(res: any): any {
+    return typeof res === 'string' ? JSON.parse(res) : res;
+  }
+
+  private parseSuccess(res: any, mapError?: (response: ApiResponse) => unknown): any {
+    const response = this.parseResponse(res);
+    if (response.status !== 200) {
+      throw this.toError(response, mapError);
+    }
     return response.result;
+  }
+
+  private toError(response: ApiResponse, mapError?: (response: ApiResponse) => unknown): Error {
+    let nearpayError: unknown;
+    try {
+      nearpayError = mapError?.(response);
+    } catch {
+      nearpayError = undefined;
+    }
+    const message = response.message || `Nearpay operation failed with status ${response.status}`;
+    return Object.assign(new Error(message), {
+      status: response.status,
+      result: response.result,
+      nearpayError,
+    });
   }
 
   private  async callMethod(name: keyof NearpayPluginDefenetions, options: any): Promise<any> {
